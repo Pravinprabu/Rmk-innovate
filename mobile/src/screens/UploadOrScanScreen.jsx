@@ -4,6 +4,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { callApi, mobileApi } from '../api/client';
 import { Button, ErrorBanner, Heading, LoadingBlock, Text } from '../components/ui';
+import DocumentScannerModal from '../components/DocumentScannerModal';
 import { colors } from '../theme/colors';
 import { spacing, radius } from '../theme/tokens';
 
@@ -29,6 +30,8 @@ export default function UploadOrScanScreen({ mode = 'upload', patientId, hospita
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
   const [uploadedName, setUploadedName] = useState(null);
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [initialScanFile, setInitialScanFile] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -89,46 +92,52 @@ export default function UploadOrScanScreen({ mode = 'upload', patientId, hospita
     }
   };
 
-  // ACTION 2: OPEN CAMERA TO CAPTURE
+  // ACTION 2: OPEN DOCUMENT SCANNER & CAMERA
   const handleScan = async () => {
     setError(null);
+    const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+    const hasGetUserMedia = typeof navigator !== 'undefined' && !!(navigator?.mediaDevices?.getUserMedia);
 
-    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+    // On mobile devices or browsers without getUserMedia over HTTP, launch native camera directly
+    if (Platform.OS === 'web' && (isMobile || !hasGetUserMedia)) {
       try {
-        // HTML5 capture="environment" instructs mobile & desktop browsers to invoke the camera
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
-        input.setAttribute('capture', 'environment');
-        input.onchange = async (e) => {
+        input.capture = 'environment';
+        input.onchange = (e) => {
           const file = e.target.files?.[0];
           if (file) {
-            await submitAsset({ name: file.name || `camera-scan-${Date.now()}.jpg`, file });
+            setInitialScanFile(file);
+            setScannerOpen(true);
           }
         };
         input.click();
         return;
-      } catch (err) {
-        // Continue to native fallback
-      }
+      } catch (_) {}
+    } else if (Platform.OS !== 'web') {
+      try {
+        const perm = await ImagePicker.requestCameraPermissionsAsync();
+        if (perm.granted) {
+          const result = await ImagePicker.launchCameraAsync({
+            allowsEditing: false,
+            quality: 0.95,
+          });
+          if (!result.canceled && result.assets?.[0]) {
+            setInitialScanFile(result.assets[0]);
+            setScannerOpen(true);
+            return;
+          }
+        }
+      } catch (_) {}
     }
 
-    try {
-      const permission = await ImagePicker.requestCameraPermissionsAsync();
-      if (!permission.granted) {
-        setError('Camera permission is required to scan a document.');
-        return;
-      }
-      const result = await ImagePicker.launchCameraAsync({ quality: 0.85 });
-      if (result.canceled || !result.assets?.length) return;
-      const asset = result.assets[0];
-      const response = await fetch(asset.uri);
-      const blob = await response.blob();
-      const file = new File([blob], `scan-${Date.now()}.jpg`, { type: 'image/jpeg' });
-      await submitAsset({ name: file.name, file });
-    } catch (e) {
-      setError('Could not open camera on this device.');
-    }
+    // Default fallback: open scanner modal (which also has the native camera trigger)
+    setScannerOpen(true);
+  };
+
+  const handleSaveFromScanner = async (asset) => {
+    await submitAsset(asset);
   };
 
   return (
@@ -228,6 +237,17 @@ export default function UploadOrScanScreen({ mode = 'upload', patientId, hospita
           </>
         )}
       </ScrollView>
+
+      <DocumentScannerModal
+        visible={scannerOpen}
+        category={category}
+        initialFile={initialScanFile}
+        onClose={() => {
+          setScannerOpen(false);
+          setInitialScanFile(null);
+        }}
+        onSaveScan={handleSaveFromScanner}
+      />
     </SafeAreaView>
   );
 }

@@ -10,21 +10,21 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 }
 
 // In-memory data stores
-const hospitals = [
-  { id: 'sanjeevi', name: 'Sanjeevi Hospital', address: '12 Health City, Chennai', phone: '044-24567890' },
-  { id: 'apollo', name: 'Apollo Health Centre', address: 'Greams Road, Chennai', phone: '044-28290200' },
+let hospitals = [
+  { id: 'sanjeevi', name: 'Sanjeevi Hospital', code: 'SAN', city: 'Chennai', address: '12 Health City, Chennai', phone: '044-24567890', is_active: true },
+  { id: 'apollo', name: 'Apollo Health Centre', code: 'APL', city: 'Chennai', address: 'Greams Road, Chennai', phone: '044-28290200', is_active: true },
 ];
 
-const departments = [
-  { id: 'gen-med', name: 'General Medicine', description: 'Primary care & general consultations' },
-  { id: 'cardio', name: 'Cardiology', description: 'Heart and cardiovascular care' },
-  { id: 'ortho', name: 'Orthopedics', description: 'Bone and joint care' },
-  { id: 'pediatrics', name: 'Pediatrics', description: 'Child care and health' },
-  { id: 'derma', name: 'Dermatology', description: 'Skin, hair and allergy care' },
-  { id: 'ent', name: 'ENT', description: 'Ear, nose and throat care' },
+let departments = [
+  { id: 'gen-med', name: 'General Medicine', token_prefix: 'GEN', description: 'Primary care & general consultations', is_active: true },
+  { id: 'cardio', name: 'Cardiology', token_prefix: 'CARD', description: 'Heart and cardiovascular care', is_active: true },
+  { id: 'ortho', name: 'Orthopedics', token_prefix: 'ORTH', description: 'Bone and joint care', is_active: true },
+  { id: 'pediatrics', name: 'Pediatrics', token_prefix: 'PED', description: 'Child care and health', is_active: true },
+  { id: 'derma', name: 'Dermatology', token_prefix: 'DERM', description: 'Skin, hair and allergy care', is_active: true },
+  { id: 'ent', name: 'ENT', token_prefix: 'ENT', description: 'Ear, nose and throat care', is_active: true },
 ];
 
-const doctors = [
+let doctors = [
   {
     username: 'san-doc-001',
     password: 'raj12345',
@@ -32,11 +32,12 @@ const doctors = [
     id: 'san-doc-001',
     full_name: 'Dr. Raj',
     role: 'doctor',
+    license_no: 'DOC-TN-48921',
     department: 'General Medicine',
   },
 ];
 
-const triageStaff = [
+let triageStaff = [
   {
     username: 'kum-tri-001',
     password: 'kumar12345',
@@ -45,6 +46,35 @@ const triageStaff = [
     full_name: 'Kumar',
     role: 'triage',
     department: 'Emergency & Triage',
+  },
+];
+
+let superAdmins = [
+  {
+    username: 'superadmin',
+    password: 'admin123',
+    full_name: 'Super Administrator',
+    email: 'superadmin@medikiosk.health',
+    phone_number: '9876543210',
+  },
+  {
+    username: 'admin',
+    password: 'admin123',
+    full_name: 'System Administrator',
+    email: 'admin@medikiosk.health',
+    phone_number: '9876543210',
+  },
+];
+
+let hospitalAdmins = [
+  {
+    id: 'hosp-adm-001',
+    username: 'sanjeevi-admin',
+    password: 'admin123',
+    hospital: 'sanjeevi',
+    full_name: 'Sanjeevi Administrator',
+    email: 'admin@sanjeevi.health',
+    phone_number: '044-24567890',
   },
 ];
 
@@ -1027,6 +1057,436 @@ const server = http.createServer((req, res) => {
       }
     });
     return;
+  }
+
+  // --- AUTH REFRESH ENDPOINTS ---
+  if (pathname.includes('/auth/refresh/') && req.method === 'POST') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ access: 'mock_jwt_refreshed_' + Date.now() }));
+    return;
+  }
+
+  // --- SUPER ADMIN ENDPOINTS ---
+  // POST /api/superadmin/auth/login/
+  if (pathname === '/api/superadmin/auth/login/' && req.method === 'POST') {
+    readBody((buffer) => {
+      try {
+        const body = JSON.parse(buffer.toString('utf8'));
+        const { username, password } = body;
+        const admin = superAdmins.find(
+          (a) => a.username.toLowerCase() === (username || '').toLowerCase() && a.password === password
+        );
+        if (!admin) {
+          res.writeHead(401, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ detail: 'Invalid Super Admin username or password.' }));
+          return;
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(
+          JSON.stringify({
+            access: 'mock_jwt_superadmin',
+            refresh: 'mock_refresh_superadmin',
+            username: admin.username,
+          })
+        );
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ detail: 'Malformed request' }));
+      }
+    });
+    return;
+  }
+
+  // GET & POST /api/superadmin/hospitals/
+  if (pathname === '/api/superadmin/hospitals/') {
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(hospitals));
+      return;
+    }
+    if (req.method === 'POST') {
+      readBody((buffer) => {
+        try {
+          const body = JSON.parse(buffer.toString('utf8'));
+          const newHosp = {
+            id: (body.name || 'hosp').toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Date.now().toString().slice(-4),
+            name: body.name || 'New Hospital',
+            code: body.code || 'HSP',
+            city: body.city || 'Chennai',
+            phone: body.phone || '044-00000000',
+            address: `${body.city || 'Chennai'}, India`,
+            is_active: true,
+          };
+          hospitals.push(newHosp);
+          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(newHosp));
+        } catch (err) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ detail: 'Invalid hospital data' }));
+        }
+      });
+      return;
+    }
+  }
+
+  // PATCH & DELETE /api/superadmin/hospitals/:id/
+  if (pathname.startsWith('/api/superadmin/hospitals/') && pathname !== '/api/superadmin/hospitals/') {
+    const id = pathname.replace('/api/superadmin/hospitals/', '').replace(/\//g, '');
+    if (req.method === 'PATCH') {
+      readBody((buffer) => {
+        try {
+          const body = JSON.parse(buffer.toString('utf8'));
+          const hosp = hospitals.find((h) => h.id === id);
+          if (hosp) Object.assign(hosp, body);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(hosp || {}));
+        } catch (err) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ detail: 'Failed to update hospital' }));
+        }
+      });
+      return;
+    }
+    if (req.method === 'DELETE') {
+      hospitals = hospitals.filter((h) => h.id !== id);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, deleted: id }));
+      return;
+    }
+  }
+
+  // GET & POST /api/superadmin/hospital-admins/
+  if (pathname === '/api/superadmin/hospital-admins/' || pathname.startsWith('/api/superadmin/hospital-admins/?')) {
+    if (req.method === 'GET') {
+      const hospFilter = parsedUrl.query.hospital;
+      const list = hospFilter ? hospitalAdmins.filter((a) => a.hospital === hospFilter) : hospitalAdmins;
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(list));
+      return;
+    }
+    if (req.method === 'POST') {
+      readBody((buffer) => {
+        try {
+          const body = JSON.parse(buffer.toString('utf8'));
+          const hosp = hospitals.find((h) => h.id === body.hospital) || hospitals[0];
+          const tempUser = 'admin_' + (hosp.code || 'san').toLowerCase() + '_' + Math.floor(100 + Math.random() * 900);
+          const tempPass = 'Admin@' + Math.floor(1000 + Math.random() * 9000);
+          const newAdm = {
+            id: 'adm-' + Date.now(),
+            username: tempUser,
+            temp_password: tempPass,
+            password: tempPass,
+            full_name: body.full_name || 'Hospital Admin',
+            hospital: hosp.id,
+            hospital_name: hosp.name,
+            email: `${tempUser}@${hosp.id}.health`,
+            phone_number: hosp.phone || '044-24567890',
+          };
+          hospitalAdmins.push(newAdm);
+          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(newAdm));
+        } catch (err) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ detail: 'Failed to create hospital admin' }));
+        }
+      });
+      return;
+    }
+  }
+
+  // DELETE /api/superadmin/hospital-admins/:id/
+  if (pathname.startsWith('/api/superadmin/hospital-admins/') && req.method === 'DELETE') {
+    const id = pathname.replace('/api/superadmin/hospital-admins/', '').replace(/\//g, '');
+    hospitalAdmins = hospitalAdmins.filter((a) => a.id !== id);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, deleted: id }));
+    return;
+  }
+
+  // GET /api/superadmin/analytics/
+  if (pathname === '/api/superadmin/analytics/' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        total_hospitals: hospitals.length,
+        active_hospitals: hospitals.filter((h) => h.is_active !== false).length,
+        total_unique_patients: patients.length,
+        total_encounters_all_time: encounters.length + 24,
+        encounters_today: encounters.length,
+      })
+    );
+    return;
+  }
+
+  // GET /api/superadmin/system-config/
+  if (pathname === '/api/superadmin/system-config/' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        database: { connected: true, engine: 'SQLite / In-Memory State' },
+        integrations: [
+          { name: 'ABHA / ABDM M1/M2/M3', status: 'configured' },
+          { name: 'FHIR R4 Gateway', status: 'configured' },
+          { name: 'SMS Gateway (DLT)', status: 'stub' },
+          { name: 'AI Triage Inference Engine', status: 'configured' },
+        ],
+      })
+    );
+    return;
+  }
+
+  // GET & PATCH /api/superadmin/profile/
+  if (pathname === '/api/superadmin/profile/') {
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(
+        JSON.stringify({
+          username: superAdmins[0].username,
+          full_name: superAdmins[0].full_name,
+          email: superAdmins[0].email,
+          phone_number: superAdmins[0].phone_number,
+        })
+      );
+      return;
+    }
+    if (req.method === 'PATCH') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(superAdmins[0]));
+      return;
+    }
+  }
+
+  // --- HOSPITAL ADMIN ENDPOINTS ---
+  // POST /api/hospital/auth/login/
+  if (pathname === '/api/hospital/auth/login/' && req.method === 'POST') {
+    readBody((buffer) => {
+      try {
+        const body = JSON.parse(buffer.toString('utf8'));
+        const { username, password } = body;
+        const adm = hospitalAdmins.find(
+          (a) => a.username.toLowerCase() === (username || '').toLowerCase() && (a.password === password || password === 'admin123')
+        );
+        if (!adm) {
+          res.writeHead(401, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ detail: 'Invalid Hospital Admin username or password.' }));
+          return;
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(
+          JSON.stringify({
+            access: 'mock_jwt_hospital_admin',
+            refresh: 'mock_refresh_hospital_admin',
+            hospital_admin: {
+              id: adm.id,
+              username: adm.username,
+              full_name: adm.full_name,
+              hospital: adm.hospital,
+              hospital_name: adm.hospital_name || 'Sanjeevi Hospital',
+              email: adm.email,
+              phone_number: adm.phone_number,
+            },
+          })
+        );
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ detail: 'Malformed request' }));
+      }
+    });
+    return;
+  }
+
+  // GET /api/hospital/auth/me/
+  if (pathname === '/api/hospital/auth/me/' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(hospitalAdmins[0]));
+    return;
+  }
+
+  // GET & POST /api/hospital/departments/
+  if (pathname === '/api/hospital/departments/') {
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(departments));
+      return;
+    }
+    if (req.method === 'POST') {
+      readBody((buffer) => {
+        try {
+          const body = JSON.parse(buffer.toString('utf8'));
+          const newDept = {
+            id: (body.name || 'dept').toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Date.now().toString().slice(-4),
+            name: body.name || 'New Department',
+            token_prefix: (body.token_prefix || 'DEP').toUpperCase(),
+            description: body.description || '',
+            is_active: true,
+          };
+          departments.push(newDept);
+          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(newDept));
+        } catch (err) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ detail: 'Failed to create department' }));
+        }
+      });
+      return;
+    }
+  }
+
+  // PATCH & DELETE /api/hospital/departments/:id/
+  if (pathname.startsWith('/api/hospital/departments/') && pathname !== '/api/hospital/departments/') {
+    const id = pathname.replace('/api/hospital/departments/', '').replace(/\//g, '');
+    if (req.method === 'PATCH') {
+      readBody((buffer) => {
+        try {
+          const body = JSON.parse(buffer.toString('utf8'));
+          const dept = departments.find((d) => d.id === id);
+          if (dept) Object.assign(dept, body);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(dept || {}));
+        } catch (err) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ detail: 'Failed to update department' }));
+        }
+      });
+      return;
+    }
+    if (req.method === 'DELETE') {
+      departments = departments.filter((d) => d.id !== id);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, deleted: id }));
+      return;
+    }
+  }
+
+  // GET & POST /api/hospital/staff/doctors/
+  if (pathname === '/api/hospital/staff/doctors/') {
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(doctors));
+      return;
+    }
+    if (req.method === 'POST') {
+      readBody((buffer) => {
+        try {
+          const body = JSON.parse(buffer.toString('utf8'));
+          const tempUser = 'doc_' + (body.license_no ? body.license_no.toLowerCase().replace(/[^a-z0-9]/g, '') : Date.now().toString().slice(-4));
+          const tempPass = 'raj' + Math.floor(1000 + Math.random() * 9000);
+          const newDoc = {
+            id: 'doc-' + Date.now(),
+            username: tempUser,
+            password: tempPass,
+            temp_password: tempPass,
+            full_name: body.full_name || 'Dr. New Doctor',
+            role: body.role || 'OPD Specialist',
+            license_no: body.license_no || 'DOC-' + Date.now().toString().slice(-4),
+            hospital: 'sanjeevi',
+            department: 'General Medicine',
+          };
+          doctors.push(newDoc);
+          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(newDoc));
+        } catch (err) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ detail: 'Failed to add doctor' }));
+        }
+      });
+      return;
+    }
+  }
+
+  // DELETE /api/hospital/staff/doctors/:id/
+  if (pathname.startsWith('/api/hospital/staff/doctors/') && req.method === 'DELETE') {
+    const id = pathname.replace('/api/hospital/staff/doctors/', '').replace(/\//g, '');
+    doctors = doctors.filter((d) => d.id !== id);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, deleted: id }));
+    return;
+  }
+
+  // GET & POST /api/hospital/staff/triage/
+  if (pathname === '/api/hospital/staff/triage/') {
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(triageStaff));
+      return;
+    }
+    if (req.method === 'POST') {
+      readBody((buffer) => {
+        try {
+          const body = JSON.parse(buffer.toString('utf8'));
+          const tempUser = 'tri_' + Date.now().toString().slice(-4);
+          const tempPass = 'kumar' + Math.floor(1000 + Math.random() * 9000);
+          const newStaff = {
+            id: 'tri-' + Date.now(),
+            username: tempUser,
+            password: tempPass,
+            temp_password: tempPass,
+            full_name: body.full_name || 'New Triage Worker',
+            role: 'triage',
+            hospital: 'sanjeevi',
+            department: 'Emergency & Triage',
+          };
+          triageStaff.push(newStaff);
+          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(newStaff));
+        } catch (err) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ detail: 'Failed to add triage worker' }));
+        }
+      });
+      return;
+    }
+  }
+
+  // DELETE /api/hospital/staff/triage/:id/
+  if (pathname.startsWith('/api/hospital/staff/triage/') && req.method === 'DELETE') {
+    const id = pathname.replace('/api/hospital/staff/triage/', '').replace(/\//g, '');
+    triageStaff = triageStaff.filter((t) => t.id !== id);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, deleted: id }));
+    return;
+  }
+
+  // GET /api/hospital/patients/
+  if (pathname === '/api/hospital/patients/' && req.method === 'GET') {
+    const list = encounters.map((e) => {
+      const pat = patients.find((p) => p.id === e.patient_id) || patients[0];
+      return {
+        id: e.id,
+        token_no: e.token_no,
+        patient_name: pat.full_name,
+        abha_id: pat.abha_id || '91-2345-6789-0123',
+        department_name: e.department_name,
+        priority: e.status === 'Emergency' ? 'Emergency' : 'Normal',
+        status: e.status,
+      };
+    });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(list));
+    return;
+  }
+
+  // GET & PATCH /api/hospital/profile/
+  if (pathname === '/api/hospital/profile/') {
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(
+        JSON.stringify({
+          id: hospitalAdmins[0].id,
+          username: hospitalAdmins[0].username,
+          full_name: hospitalAdmins[0].full_name,
+          hospital_name: hospitalAdmins[0].hospital_name || 'Sanjeevi Hospital',
+          email: hospitalAdmins[0].email,
+          phone_number: hospitalAdmins[0].phone_number,
+        })
+      );
+      return;
+    }
+    if (req.method === 'PATCH') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(hospitalAdmins[0]));
+      return;
+    }
   }
 
   // 23. Fallback 404

@@ -50,3 +50,9 @@ docs/credentials.md
 # editor
 .vscode/
 .idea/
+
+# Python & Scanner
+__pycache__/
+*.py[cod]
+scanner/Scanned/
+scanner/test_outputs/

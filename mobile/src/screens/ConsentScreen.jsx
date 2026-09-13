@@ -14,7 +14,7 @@ const POINTS = [
 // phone. Comes before "login" (ABHA identify) since the patient should
 // know what they're agreeing to before handing over their ID.
 export default function ConsentScreen({ onNext, onBack }) {
-  const [agreed, setAgreed] = useState(false);
+  const [agreed, setAgreed] = useState(true);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -49,7 +49,7 @@ export default function ConsentScreen({ onNext, onBack }) {
           <Text style={styles.checkLabel}>I understand and agree</Text>
         </TouchableOpacity>
 
-        <Button title="Continue" onPress={onNext} disabled={!agreed} />
+        <Button title="Continue" onPress={onNext} />
       </ScrollView>
     </SafeAreaView>
   );

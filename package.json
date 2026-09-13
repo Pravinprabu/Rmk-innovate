@@ -9,6 +9,9 @@
     "mobile:web": "npm run web --prefix mobile",
     "mobile:android": "npm run android --prefix mobile",
     "mobile:ios": "npm run ios --prefix mobile",
+    "backend:start": "node backend/server.js",
+    "scanner:start": "python scanner/app.py",
+    "scanner:test": "python scanner/test_scanner.py",
     "admin:dev": "npm run dev --prefix web-frontend/admin",
     "admin:build": "npm run build --prefix web-frontend/admin",
     "admin:lint": "npm run lint --prefix web-frontend/admin"

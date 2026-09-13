@@ -5,8 +5,16 @@
 // (backend/apps/mobile/* and the public /api/hospitals/ list) is
 // intentionally public/unauthenticated. Do not "helpfully" add the kiosk
 // key here later -- see backend/apps/mobile/permissions.py's docstring for
-// the same warning on the server side.
-const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+const getBaseUrl = () => {
+  if (process.env.EXPO_PUBLIC_API_BASE_URL) {
+    return process.env.EXPO_PUBLIC_API_BASE_URL;
+  }
+  if (typeof window !== 'undefined' && window.location && window.location.hostname) {
+    return `http://${window.location.hostname}:8000`;
+  }
+  return 'http://192.168.1.4:8000';
+};
+const BASE_URL = getBaseUrl();
 
 class ApiError extends Error {
   constructor(message, status, body) {
