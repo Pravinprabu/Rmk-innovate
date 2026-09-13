@@ -19,6 +19,7 @@ import DoctorBookedPage from './staff/pages/DoctorBookedPage';
 import DoctorProfilePage from './staff/pages/DoctorProfilePage';
 import TriageQueuePage from './staff/pages/TriageQueuePage';
 import TriageBookedPage from './staff/pages/TriageBookedPage';
+import TriageCreateTokenPage from './staff/pages/TriageCreateTokenPage';
 import TriageEmergencyPage from './staff/pages/TriageEmergencyPage';
 import TriageProfilePage from './staff/pages/TriageProfilePage';
 
@@ -128,6 +129,14 @@ export default function App() {
         element={
           <StaffProtectedRoute role="triage" loginPath="/staff/login">
             <TriageBookedPage />
+          </StaffProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/triage/create-token"
+        element={
+          <StaffProtectedRoute role="triage" loginPath="/staff/login">
+            <TriageCreateTokenPage />
           </StaffProtectedRoute>
         }
       />

@@ -902,6 +902,133 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // 22a. POST /api/triage/tokens/ (Create normal patient walk-in token)
+  if ((pathname === '/api/triage/tokens/' || pathname === '/api/triage/create-token/') && req.method === 'POST') {
+    readBody((buffer) => {
+      try {
+        const body = JSON.parse(buffer.toString('utf8'));
+        const fullName = body.full_name || body.name || 'Walk-in Patient';
+        const ageYears = parseInt(body.age_years || body.age || '25', 10);
+        const deptId = body.department || 'gen-med';
+        const dept = departments.find((d) => d.id === deptId || d.name === deptId);
+        const deptName = dept ? dept.name : (body.department_name || 'General Medicine');
+        const tokenNo = 'SAN-' + (100 + encounters.length + 1);
+
+        const newPatient = {
+          id: 'pat-' + Date.now(),
+          full_name: fullName,
+          age_years: ageYears,
+          gender: body.gender || 'Not specified',
+          mobile_number: body.mobile_number || '9876543210',
+          otp: '123456',
+        };
+        patients.push(newPatient);
+
+        const newEncounter = {
+          id: 'enc-' + Date.now(),
+          patient_id: newPatient.id,
+          hospital_id: 'sanjeevi',
+          token_no: tokenNo,
+          slot_date: new Date().toISOString().slice(0, 10),
+          slot_time: 'Walk-in Queue',
+          department_name: deptName,
+          status: 'Waiting',
+          review_status: 'Pending',
+          full_name: fullName,
+          age_years: ageYears,
+          vitals: { bp: '120/80', pulse: 72, temp: '98.4°F', spo2: '99%' },
+          ai_summaries: [
+            {
+              id: 'sum-' + Date.now(),
+              encounter: 'enc-' + Date.now(),
+              summary_text: `Patient ${fullName} (${ageYears}y) registered for ${deptName} by triage desk. Queued under Token ${tokenNo}.`,
+            },
+          ],
+        };
+        encounters.unshift(newEncounter);
+
+        res.writeHead(201, { 'Content-Type': 'application/json' });
+        res.end(
+          JSON.stringify({
+            ok: true,
+            token_no: tokenNo,
+            patient_name: fullName,
+            age_years: ageYears,
+            department_name: deptName,
+            status: 'Waiting',
+            slot_time: 'Walk-in Queue',
+            created_at: new Date().toISOString(),
+          })
+        );
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ detail: 'Failed to create patient token' }));
+      }
+    });
+    return;
+  }
+
+  // 22b. POST /api/triage/emergency-token/ (Emergency Token bypass)
+  if (pathname === '/api/triage/emergency-token/' && req.method === 'POST') {
+    readBody((buffer) => {
+      try {
+        const body = JSON.parse(buffer.toString('utf8'));
+        const fullName = body.full_name || 'Emergency Patient';
+        const deptId = body.department || 'Emergency';
+        const dept = departments.find((d) => d.id === deptId || d.name === deptId);
+        const deptName = dept ? dept.name : 'Emergency & Triage';
+        const tokenNo = 'EMG-' + (100 + encounters.length + 1);
+
+        const newPatient = {
+          id: 'pat-' + Date.now(),
+          full_name: fullName,
+          age_years: parseInt(body.age_years || body.age || '30', 10),
+          gender: body.gender || 'Not specified',
+          mobile_number: body.mobile_number || '9876543210',
+        };
+        patients.push(newPatient);
+
+        const newEncounter = {
+          id: 'enc-' + Date.now(),
+          patient_id: newPatient.id,
+          hospital_id: 'sanjeevi',
+          token_no: tokenNo,
+          slot_date: new Date().toISOString().slice(0, 10),
+          slot_time: 'HIGH ALERT',
+          department_name: deptName,
+          status: 'Emergency',
+          review_status: 'Pending',
+          full_name: fullName,
+          vitals: { bp: '135/90', pulse: 92, temp: '99.2°F', spo2: '96%' },
+          ai_summaries: [
+            {
+              id: 'sum-' + Date.now(),
+              encounter: 'enc-' + Date.now(),
+              summary_text: `EMERGENCY ALERT: Patient ${fullName} admitted with urgent status. Immediate doctor attention requested.`,
+            },
+          ],
+        };
+        encounters.unshift(newEncounter);
+
+        res.writeHead(201, { 'Content-Type': 'application/json' });
+        res.end(
+          JSON.stringify({
+            ok: true,
+            token_no: tokenNo,
+            patient_name: fullName,
+            department_name: deptName,
+            status: 'Emergency',
+            created_at: new Date().toISOString(),
+          })
+        );
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ detail: 'Failed to create emergency token' }));
+      }
+    });
+    return;
+  }
+
   // 23. Fallback 404
   res.writeHead(404, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ error: 'Endpoint not found', path: pathname }));

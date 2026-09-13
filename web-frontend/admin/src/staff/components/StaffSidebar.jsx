@@ -14,6 +14,7 @@ const NAV_ITEMS = {
   triage: [
     { to: '/staff/triage', label: 'Patient Queue', icon: '🩺', end: true },
     { to: '/staff/triage/booked', label: 'Booked Patients', icon: '📅' },
+    { to: '/staff/triage/create-token', label: 'Create Token', icon: '🎫' },
     { to: '/staff/triage/emergency', label: 'Emergency Token', icon: '🚨' },
     { to: '/staff/triage/profile', label: 'Profile', icon: '👤' },
   ],

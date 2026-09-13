@@ -161,6 +161,7 @@ export const triageApi = {
   acknowledgeAlert: (encounterId) => request(`/api/triage/alerts/${encounterId}/acknowledge/`, { method: 'POST' }),
   bookings: () => request('/api/triage/bookings/'),
   departments: () => request('/api/triage/departments/'),
+  createToken: (payload) => request('/api/triage/tokens/', { method: 'POST', body: payload }),
   createEmergencyToken: (payload) => request('/api/triage/emergency-token/', { method: 'POST', body: payload }),
   profile: {
     get: () => request('/api/triage/profile/'),
