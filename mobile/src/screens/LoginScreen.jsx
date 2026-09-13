@@ -3,81 +3,173 @@ import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 're
 import { callApi, mobileApi } from '../api/client';
 import { Button, ErrorBanner, Heading, Text, TextField } from '../components/ui';
 import { colors } from '../theme/colors';
-import { spacing } from '../theme/tokens';
+import { spacing, radius } from '../theme/tokens';
 
-// ABHA/hospital IDs display and are stored as "91-8472-9012-3419" (2-4-4-4
-// digit groups) -- same format as frontend/src/screens/kiosk/PatientIdScreen.jsx.
-function formatAbha(raw) {
-  const digits = raw.replace(/\D/g, '').slice(0, 14);
-  const groups = [digits.slice(0, 2), digits.slice(2, 6), digits.slice(6, 10), digits.slice(10, 14)];
-  return groups.filter(Boolean).join('-');
-}
-
-// Screen 3 -- "Login". Identifies the patient by ABHA ID (finds or creates
-// their record, same as the kiosk) up front, before choosing to book an
-// appointment or upload a document -- both of those need to know who this
-// is, so asking once here means neither branch has to ask again.
 export default function LoginScreen({ language, onNext, onBack }) {
-  const [abhaId, setAbhaId] = useState('');
+  const [tab, setTab] = useState('login'); // 'login' | 'signup'
+
+  // Login form state
+  const [loginPhone, setLoginPhone] = useState('9876543210');
+  const [loginOtp, setLoginOtp] = useState('123456');
+
+  // Signup form state
   const [fullName, setFullName] = useState('');
-  const [mobileNumber, setMobileNumber] = useState('');
+  const [signupPhone, setSignupPhone] = useState('');
+  const [age, setAge] = useState('');
+  const [gender, setGender] = useState('Male');
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  const abhaDigits = abhaId.replace(/\D/g, '');
-  const canSubmit = abhaDigits.length === 14 && fullName.trim().length > 1 && mobileNumber.trim().length === 10;
+  const canSubmitLogin = loginPhone.trim().length === 10 && loginOtp.trim().length >= 4;
+  const canSubmitSignup = fullName.trim().length > 1 && signupPhone.trim().length === 10;
+
+  const handleFillDemo = () => {
+    setLoginPhone('9876543210');
+    setLoginOtp('123456');
+    setError(null);
+  };
 
   const handleSubmit = async () => {
     setSubmitting(true);
     setError(null);
-    const result = await callApi(() =>
-      mobileApi.identify({ abha_id: abhaId, full_name: fullName.trim(), mobile_number: mobileNumber, language })
-    );
+
+    const payload =
+      tab === 'login'
+        ? {
+            mobile_number: loginPhone.trim(),
+            otp: loginOtp.trim(),
+            language,
+          }
+        : {
+            full_name: fullName.trim(),
+            mobile_number: signupPhone.trim(),
+            age_years: parseInt(age, 10) || 25,
+            gender: gender,
+            language,
+          };
+
+    const result = await callApi(() => mobileApi.identify(payload));
     setSubmitting(false);
+
     if (!result.ok) {
       setError(result.error);
       return;
     }
+
     onNext({
       patientId: result.data.patient_id,
       encounterId: result.data.encounter_id,
       fullName: result.data.full_name,
-      abhaId,
-      mobileNumber,
+      mobileNumber: result.data.mobile_number,
+      tokenNo: result.data.token_no,
     });
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <TouchableOpacity onPress={onBack}>
-          <Text style={styles.backLink}>← Back</Text>
-        </TouchableOpacity>
+        {onBack && (
+          <TouchableOpacity onPress={onBack}>
+            <Text style={styles.backLink}>← Back</Text>
+          </TouchableOpacity>
+        )}
 
-        <Heading style={styles.title}>Identify yourself</Heading>
-        <Text style={styles.subtitle}>Enter your ABHA ID to link your hospital record.</Text>
+        <Heading style={styles.title}>Patient Portal</Heading>
+        <Text style={styles.subtitle}>Log in or register directly to access your medical records.</Text>
 
-        <View style={styles.form}>
-          <TextField
-            label="ABHA / Hospital ID"
-            placeholder="91-8472-9012-3419"
-            value={abhaId}
-            onChangeText={(v) => setAbhaId(formatAbha(v))}
-            keyboardType="number-pad"
-          />
-          <TextField label="Full name" placeholder="As on your ID" value={fullName} onChangeText={setFullName} />
-          <TextField
-            label="Mobile number"
-            placeholder="10-digit mobile number"
-            value={mobileNumber}
-            onChangeText={(v) => setMobileNumber(v.replace(/\D/g, '').slice(0, 10))}
-            keyboardType="number-pad"
-          />
+        {/* Tab Switcher: Login vs Sign Up */}
+        <View style={styles.tabBar}>
+          <TouchableOpacity
+            style={[styles.tabButton, tab === 'login' && styles.tabButtonActive]}
+            onPress={() => {
+              setTab('login');
+              setError(null);
+            }}
+          >
+            <Text style={[styles.tabText, tab === 'login' && styles.tabTextActive]}>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tabButton, tab === 'signup' && styles.tabButtonActive]}
+            onPress={() => {
+              setTab('signup');
+              setError(null);
+            }}
+          >
+            <Text style={[styles.tabText, tab === 'signup' && styles.tabTextActive]}>Sign Up</Text>
+          </TouchableOpacity>
         </View>
+
+        {tab === 'login' ? (
+          <View style={styles.form}>
+            <TextField
+              label="Phone Number"
+              placeholder="10-digit mobile number"
+              value={loginPhone}
+              onChangeText={(v) => setLoginPhone(v.replace(/\D/g, '').slice(0, 10))}
+              keyboardType="number-pad"
+            />
+            <TextField
+              label="OTP Code"
+              placeholder="Enter 6-digit OTP"
+              value={loginOtp}
+              onChangeText={(v) => setLoginOtp(v.replace(/\D/g, '').slice(0, 6))}
+              keyboardType="number-pad"
+            />
+            <TouchableOpacity style={styles.demoFillBtn} onPress={handleFillDemo}>
+              <Text style={styles.demoFillText}>⚡ Quick Fill Demo (9876543210 / 123456)</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.form}>
+            <TextField
+              label="Full Name"
+              placeholder="e.g. Pravin Prabu"
+              value={fullName}
+              onChangeText={setFullName}
+            />
+            <TextField
+              label="Phone Number"
+              placeholder="10-digit mobile number"
+              value={signupPhone}
+              onChangeText={(v) => setSignupPhone(v.replace(/\D/g, '').slice(0, 10))}
+              keyboardType="number-pad"
+            />
+            <View style={styles.row}>
+              <View style={{ flex: 1, marginRight: spacing.sm }}>
+                <TextField
+                  label="Age"
+                  placeholder="e.g. 24"
+                  value={age}
+                  onChangeText={(v) => setAge(v.replace(/\D/g, '').slice(0, 3))}
+                  keyboardType="number-pad"
+                />
+              </View>
+              <View style={{ flex: 1, marginLeft: spacing.sm }}>
+                <Text style={styles.fieldLabel}>Gender</Text>
+                <View style={styles.genderRow}>
+                  {['Male', 'Female'].map((g) => (
+                    <TouchableOpacity
+                      key={g}
+                      style={[styles.genderBtn, gender === g && styles.genderBtnActive]}
+                      onPress={() => setGender(g)}
+                    >
+                      <Text style={[styles.genderText, gender === g && styles.genderTextActive]}>{g}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            </View>
+          </View>
+        )}
 
         <ErrorBanner message={error} />
 
-        <Button title={submitting ? 'Checking...' : 'Continue'} onPress={handleSubmit} disabled={!canSubmit || submitting} />
+        <Button
+          title={submitting ? 'Please wait...' : tab === 'login' ? 'Login' : 'Create Account'}
+          onPress={handleSubmit}
+          disabled={tab === 'login' ? !canSubmitLogin || submitting : !canSubmitSignup || submitting}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -87,7 +179,80 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bgCanvas },
   scroll: { paddingHorizontal: spacing.xl, paddingTop: spacing.xl, paddingBottom: spacing.xxl },
   backLink: { color: colors.emeraldDark, fontWeight: '700', marginBottom: spacing.md },
-  title: { fontSize: 24, marginBottom: spacing.xs },
-  subtitle: { color: colors.textSecondary, marginBottom: spacing.lg },
+  title: { fontSize: 26, marginBottom: spacing.xs },
+  subtitle: { color: colors.textSecondary, marginBottom: spacing.lg, fontSize: 14 },
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: colors.surfaceWhite,
+    borderRadius: radius.pill,
+    borderWidth: 1.5,
+    borderColor: colors.borderLight,
+    padding: 4,
+    marginBottom: spacing.lg,
+  },
+  tabButton: {
+    flex: 1,
+    paddingVertical: spacing.sm + 2,
+    alignItems: 'center',
+    borderRadius: radius.pill,
+  },
+  tabButtonActive: {
+    backgroundColor: colors.emerald,
+  },
+  tabText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: colors.textSecondary,
+  },
+  tabTextActive: {
+    color: colors.surfaceWhite,
+  },
   form: { marginBottom: spacing.md },
+  demoFillBtn: {
+    paddingVertical: spacing.xs,
+    marginBottom: spacing.md,
+  },
+  demoFillText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.emeraldDark,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  fieldLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.textSecondary,
+    marginBottom: spacing.xs,
+  },
+  genderRow: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+    height: 48,
+    alignItems: 'center',
+  },
+  genderBtn: {
+    flex: 1,
+    height: 44,
+    borderRadius: radius.card,
+    borderWidth: 1.5,
+    borderColor: colors.borderLight,
+    backgroundColor: colors.surfaceWhite,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  genderBtnActive: {
+    borderColor: colors.emerald,
+    backgroundColor: colors.emeraldSoft,
+  },
+  genderText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  genderTextActive: {
+    color: colors.emeraldDark,
+  },
 });

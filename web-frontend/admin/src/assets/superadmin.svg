@@ -1,0 +1,202 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%" fill="none">
+  <defs>
+    <!-- Gradients -->
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.45"/>
+      <stop offset="50%" stop-color="#1E3A8A" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="lockAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#60A5FA" stop-opacity="0.85"/>
+      <stop offset="50%" stop-color="#38BDF8" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="50%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="45%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#1E3A8A"/>
+    </linearGradient>
+
+    <linearGradient id="shieldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#BAE6FD"/>
+      <stop offset="50%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#60A5FA"/>
+    </linearGradient>
+
+    <linearGradient id="glassHex" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#1E3A8A" stop-opacity="0.05"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="neonGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <filter id="lockShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#000000" flood-opacity="0.5"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="14" flood-color="#38BDF8" flood-opacity="0.6"/>
+    </filter>
+
+    <filter id="softHexShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="22" flood-color="#000000" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+
+  <!-- Ambient Deep Background Core Glow -->
+  <circle cx="400" cy="400" r="380" fill="url(#coreGlow)">
+    <animate attributeName="opacity" values="0.7; 1; 0.7" dur="4s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Concentric Beacon Ping Ring (Radius-based native SVG animation, perfectly centered) -->
+  <circle cx="400" cy="400" r="220" stroke="#38BDF8" stroke-width="2" fill="none">
+    <animate attributeName="r" values="210; 270; 210" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6; 0.05; 0.6" dur="4s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Orbital Outer Ring 1: Grand Dotted Celestial Ring -->
+  <g>
+    <animateTransform attributeName="transform" type="rotate" from="0 400 400" to="360 400 400" dur="24s" repeatCount="indefinite"/>
+    <circle cx="400" cy="400" r="340" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="6 14" opacity="0.4"/>
+    <circle cx="740" cy="400" r="8" fill="#38BDF8" filter="url(#neonGlow)"/>
+    <circle cx="60" cy="400" r="6" fill="#60A5FA" opacity="0.75"/>
+    <circle cx="400" cy="60" r="7" fill="#06B6D4" filter="url(#neonGlow)"/>
+    <circle cx="400" cy="740" r="5" fill="#3B82F6" opacity="0.75"/>
+  </g>
+
+  <!-- Orbital Medium Ring 2: Counter-Rotating Ring with Satellites -->
+  <g>
+    <animateTransform attributeName="transform" type="rotate" from="360 400 400" to="0 400 400" dur="30s" repeatCount="indefinite"/>
+    <circle cx="400" cy="400" r="270" stroke="#60A5FA" stroke-width="1.5" stroke-dasharray="10 20" opacity="0.45"/>
+    <circle cx="590" cy="210" r="7" fill="#38BDF8" filter="url(#neonGlow)"/>
+    <circle cx="210" cy="590" r="8" fill="#06B6D4" filter="url(#neonGlow)"/>
+    <circle cx="210" cy="210" r="5" fill="#60A5FA" opacity="0.6"/>
+    <circle cx="590" cy="590" r="6" fill="#38BDF8" opacity="0.8"/>
+  </g>
+
+  <!-- Inner Concentric Orbit Ring -->
+  <circle cx="400" cy="400" r="210" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="4 8" opacity="0.35"/>
+
+  <!-- 4 Radiant Corner Circuit Conduits with Native SVG Dashoffset Flows -->
+  <g>
+    <!-- Top-Left Conduit -->
+    <line x1="400" y1="400" x2="140" y2="140" stroke="#1E3A8A" stroke-width="3" opacity="0.65"/>
+    <line x1="400" y1="400" x2="140" y2="140" stroke="#38BDF8" stroke-width="4.5" stroke-dasharray="18 160" filter="url(#neonGlow)">
+      <animate attributeName="stroke-dashoffset" values="356; 0" dur="3s" repeatCount="indefinite"/>
+    </line>
+    <circle cx="140" cy="140" r="7" fill="#38BDF8" filter="url(#neonGlow)"/>
+    <circle cx="140" cy="140" r="3" fill="#FFFFFF"/>
+
+    <!-- Top-Right Conduit -->
+    <line x1="400" y1="400" x2="660" y2="140" stroke="#1E3A8A" stroke-width="3" opacity="0.65"/>
+    <line x1="400" y1="400" x2="660" y2="140" stroke="#06B6D4" stroke-width="4.5" stroke-dasharray="18 160" filter="url(#neonGlow)">
+      <animate attributeName="stroke-dashoffset" values="0; 356" dur="3.5s" repeatCount="indefinite"/>
+    </line>
+    <circle cx="660" cy="140" r="7" fill="#06B6D4" filter="url(#neonGlow)"/>
+    <circle cx="660" cy="140" r="3" fill="#FFFFFF"/>
+
+    <!-- Bottom-Left Conduit -->
+    <line x1="400" y1="400" x2="140" y2="660" stroke="#1E3A8A" stroke-width="3" opacity="0.65"/>
+    <line x1="400" y1="400" x2="140" y2="660" stroke="#60A5FA" stroke-width="4.5" stroke-dasharray="18 160" filter="url(#neonGlow)">
+      <animate attributeName="stroke-dashoffset" values="0; 356" dur="3.5s" repeatCount="indefinite"/>
+    </line>
+    <circle cx="140" cy="660" r="7" fill="#60A5FA" filter="url(#neonGlow)"/>
+    <circle cx="140" cy="660" r="3" fill="#FFFFFF"/>
+
+    <!-- Bottom-Right Conduit -->
+    <line x1="400" y1="400" x2="660" y2="660" stroke="#1E3A8A" stroke-width="3" opacity="0.65"/>
+    <line x1="400" y1="400" x2="660" y2="660" stroke="#38BDF8" stroke-width="4.5" stroke-dasharray="18 160" filter="url(#neonGlow)">
+      <animate attributeName="stroke-dashoffset" values="356; 0" dur="3s" repeatCount="indefinite"/>
+    </line>
+    <circle cx="660" cy="660" r="7" fill="#38BDF8" filter="url(#neonGlow)"/>
+    <circle cx="660" cy="660" r="3" fill="#FFFFFF"/>
+  </g>
+
+  <!-- MAIN FLOATING HERO: COMMAND HEXAGON + SHIELD + ANIMATED PADLOCK -->
+  <g>
+    <!-- Smooth Native Floating Animation for the entire central core -->
+    <animateTransform attributeName="transform" type="translate" values="0 0; 0 -14; 0 0" dur="6s" repeatCount="indefinite"/>
+
+    <!-- Outer Hexagonal Command Platform -->
+    <polygon points="400,165 605,282 605,518 400,635 195,518 195,282" 
+             fill="#0B132B" fill-opacity="0.95" 
+             stroke="url(#primaryGrad)" stroke-width="4.5" 
+             filter="url(#softHexShadow)"/>
+    
+    <!-- Inner Glassmorphic Hexagonal Inset -->
+    <polygon points="400,185 585,292 585,508 400,615 215,508 215,292" 
+             fill="url(#glassHex)" 
+             stroke="#38BDF8" stroke-width="2" 
+             opacity="0.75"/>
+
+    <!-- Glowing Hexagon Vertex Node Indicators -->
+    <circle cx="400" cy="165" r="7" fill="#38BDF8" filter="url(#neonGlow)"/>
+    <circle cx="605" cy="282" r="7" fill="#60A5FA" filter="url(#neonGlow)"/>
+    <circle cx="605" cy="518" r="7" fill="#06B6D4" filter="url(#neonGlow)"/>
+    <circle cx="400" cy="635" r="7" fill="#38BDF8" filter="url(#neonGlow)"/>
+    <circle cx="195" cy="518" r="7" fill="#60A5FA" filter="url(#neonGlow)"/>
+    <circle cx="195" cy="282" r="7" fill="#06B6D4" filter="url(#neonGlow)"/>
+
+    <!-- Behind-Shield Soft Radial Glow -->
+    <circle cx="400" cy="400" r="160" fill="url(#lockAura)">
+      <animate attributeName="opacity" values="0.7; 1; 0.7" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- THE ENLARGED SHIELD & ANIMATED LOCK (Centered at 400, 400) -->
+    <g transform="translate(400, 400)">
+      <!-- Master Shield Outer Glow Shell -->
+      <path d="M 0 -150 L 125 -105 V 20 C 125 110 0 175 0 175 C 0 175 -125 110 -125 20 V -105 Z" 
+            fill="url(#shieldGrad)" 
+            stroke="url(#shieldBorder)" stroke-width="5" 
+            filter="url(#lockShadow)"/>
+
+      <!-- Inner Shield Glass Reflection Line -->
+      <path d="M 0 -134 L 108 -94 V 16 C 108 95 0 152 0 152 C 0 152 -108 95 -108 16 V -94 Z" 
+            fill="none" 
+            stroke="#E0F2FE" stroke-width="2.5" 
+            opacity="0.55"/>
+
+      <!-- Secondary Inner Accent Curve -->
+      <path d="M 0 -115 L 86 -84 V 10 C 86 76 0 125 0 125 C 0 125 -86 76 -86 10 V -84 Z" 
+            fill="none" 
+            stroke="#38BDF8" stroke-width="1.5" 
+            opacity="0.4"/>
+
+      <!-- ENLARGED PADLOCK IN THE CENTER -->
+      <g filter="url(#neonGlow)">
+        <!-- Padlock Shackle Loop -->
+        <path d="M -34 -20 V -62 C -34 -85 34 -85 34 -62 V -20" 
+              fill="none" 
+              stroke="#FFFFFF" stroke-width="15" 
+              stroke-linecap="round"/>
+
+        <!-- Padlock Body with Soft Bevel -->
+        <rect x="-56" y="-22" width="112" height="96" rx="24" 
+              fill="#FFFFFF" 
+              filter="url(#softHexShadow)"/>
+
+        <!-- Inner Padlock Accent Border -->
+        <rect x="-50" y="-16" width="100" height="84" rx="18" 
+              fill="none" 
+              stroke="#E2E8F0" stroke-width="2.5"/>
+
+        <!-- Master Keyhole -->
+        <circle cx="0" cy="18" r="10" fill="#1E3A8A"/>
+        <polygon points="-5,23 5,23 7,46 -7,46" fill="#1E3A8A"/>
+
+        <!-- Shackle Joint Accents -->
+        <circle cx="-34" cy="-22" r="7.5" fill="#94A3B8" opacity="0.3"/>
+        <circle cx="34" cy="-22" r="7.5" fill="#94A3B8" opacity="0.3"/>
+      </g>
+    </g>
+  </g>
+</svg>

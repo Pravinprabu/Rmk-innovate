@@ -96,6 +96,7 @@ export const mobileApi = {
   },
   listDocuments: (patientId) => request(`/api/mobile/documents/list/?patient_id=${patientId}`),
   listAiSummaries: (patientId) => request(`/api/mobile/ai-summaries/?patient_id=${patientId}`),
+  submitAiSummary: (payload) => request('/api/mobile/ai-summaries/', { method: 'POST', body: payload }),
   getProfile: (patientId) => request(`/api/mobile/profile/?patient_id=${patientId}`),
 };
 

@@ -11,15 +11,19 @@ import SelectDepartmentScreen from './SelectDepartmentScreen';
 import PickSlotScreen from './PickSlotScreen';
 import ConfirmScreen from './ConfirmScreen';
 import UploadOrScanScreen from './UploadOrScanScreen';
+import StartExamineScreen from './StartExamineScreen';
 
 // Everything after login lives here: the persistent bottom-tab shell
-// (Home/Reports/AI Summary/Profile), plus two focused sub-flows that
+// (Home/Reports/AI Summary/Profile), plus focused sub-flows that
 // temporarily take over the whole screen (no tab bar) since they're
-// multi-step tasks, not destinations -- booking (search -> department ->
-// slot -> confirm) from Home, and upload/scan (search hospital -> upload
-// or scan) from Reports. Both return to the tab shell when done.
+// multi-step tasks, not destinations -- start examine (15 questions AI intake),
+// booking (search -> department -> slot -> confirm) from Home, and
+// upload/scan from Home and Reports. All return to the tab shell when done.
 export default function MainTabs({ patient }) {
   const [tab, setTab] = useState('home');
+
+  // Examine sub-flow state
+  const [isExamining, setIsExamining] = useState(false);
 
   // Booking sub-flow state
   const [bookingStep, setBookingStep] = useState(null); // null | 'search' | 'department' | 'slot' | 'confirm'
@@ -81,8 +85,8 @@ export default function MainTabs({ patient }) {
 
   function startUpload(mode) {
     setUploadMode(mode);
-    setUploadHospital(null);
-    setUploadStep('search');
+    setUploadHospital({ id: 'sanjeevi', name: 'Sanjeevi Hospital' });
+    setUploadStep('action');
   }
 
   function handleSelectUploadHospital(item) {
@@ -93,6 +97,24 @@ export default function MainTabs({ patient }) {
   function finishUpload() {
     setUploadStep(null);
     setUploadMode(null);
+  }
+
+  // Examine sub-flow takes over the whole screen
+  if (isExamining) {
+    return (
+      <StartExamineScreen
+        patient={patient}
+        onDone={() => setIsExamining(false)}
+        onGoToAiSummary={() => {
+          setIsExamining(false);
+          setTab('aiSummary');
+        }}
+        onBookAppointment={() => {
+          setIsExamining(false);
+          startBooking();
+        }}
+      />
+    );
   }
 
   // Booking sub-flow takes over the whole screen
@@ -149,7 +171,14 @@ export default function MainTabs({ patient }) {
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
-        {tab === 'home' && <HomeTab fullName={patient.fullName} onBookAppointment={startBooking} />}
+        {tab === 'home' && (
+          <HomeTab
+            fullName={patient?.fullName}
+            onStartExamine={() => setIsExamining(true)}
+            onBookAppointment={startBooking}
+            onScanOrUploadDocument={() => startUpload('both')}
+          />
+        )}
         {tab === 'reports' && (
           <ReportsTab patientId={patient.patientId} onUpload={() => startUpload('upload')} onScan={() => startUpload('scan')} />
         )}

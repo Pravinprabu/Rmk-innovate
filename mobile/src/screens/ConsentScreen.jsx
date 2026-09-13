@@ -5,9 +5,9 @@ import { colors } from '../theme/colors';
 import { spacing, radius } from '../theme/tokens';
 
 const POINTS = [
-  { tag: '01', title: 'Your Identity', body: 'We use your ABHA ID to find or create your patient record.' },
+  { tag: '01', title: 'Your Identity', body: 'We use your mobile number to securely find or create your patient profile.' },
   { tag: '02', title: 'Documents You Upload', body: 'Prescriptions, lab reports, and summaries you attach here are saved to your record.' },
-  { tag: '03', title: 'Hospital Sharing', body: "Bookings and documents are visible to the hospital's staff when you visit." },
+  { tag: '03', title: 'Hospital Sharing', body: "Bookings and documents are visible to the hospital's doctors when you consult." },
 ];
 
 // Screen 2 -- same idea as the kiosk's ConsentScreen, condensed for a

@@ -1,0 +1,16 @@
+{
+  "name": "rmk-innovate",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MediKiosk monorepo: patient mobile booking app and web admin portal",
+  "scripts": {
+    "install:all": "npm install --prefix mobile && npm install --prefix web-frontend/admin",
+    "mobile:start": "npm start --prefix mobile",
+    "mobile:web": "npm run web --prefix mobile",
+    "mobile:android": "npm run android --prefix mobile",
+    "mobile:ios": "npm run ios --prefix mobile",
+    "admin:dev": "npm run dev --prefix web-frontend/admin",
+    "admin:build": "npm run build --prefix web-frontend/admin",
+    "admin:lint": "npm run lint --prefix web-frontend/admin"
+  }
+}

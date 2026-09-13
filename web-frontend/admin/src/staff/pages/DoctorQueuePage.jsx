@@ -162,36 +162,30 @@ function PatientLookup({ setError }) {
     <Card className="mb-6">
       <h2 className="font-semibold text-brand-primary mb-4">Look up a patient</h2>
       <form onSubmit={handleSearch} className="flex flex-wrap items-end gap-4 mb-4">
-        <SelectField label="Search by" value={mode} onChange={(e) => setMode(e.target.value)} className="w-40">
+        <SelectField label="Search by" value={mode} onChange={(e) => setMode(e.target.value)} className="w-44">
           <option value="token_no">Token number</option>
-          <option value="abha_id">ABHA ID</option>
+          <option value="phone">Phone number</option>
         </SelectField>
-        <TextField label="Value" value={value} onChange={(e) => setValue(e.target.value)} required className="w-56" />
+        <TextField label="Value" value={value} onChange={(e) => setValue(e.target.value)} required className="w-56" placeholder={mode === 'token_no' ? 'e.g. SAN-101' : 'e.g. 9876543210'} />
         <Button type="submit" disabled={loading}>{loading ? 'Searching...' : 'Search'}</Button>
       </form>
 
       {otpInfo && !result && (
         <form onSubmit={handleVerifyOtp} className="border-t border-brand-border pt-4 flex flex-wrap items-end gap-4 mb-2">
           <div className="text-sm text-brand-text-secondary max-w-sm">
-            {otpInfo.is_dummy ? (
-              <p><strong className="text-brand-warning">Demo mode</strong> -- this patient has a placeholder mobile number, so no real SMS was sent. Enter <strong>1234</strong>.</p>
-            ) : otpInfo.sms_sent ? (
-              <p>OTP sent to <span className="font-mono">{otpInfo.masked_mobile}</span>. Valid for {otpInfo.otp_valid_minutes} minutes.</p>
-            ) : (
-              <p><strong className="text-brand-warning">No SMS gateway configured</strong> -- the OTP for <span className="font-mono">{otpInfo.masked_mobile}</span> was logged on the server instead of texted. Valid for {otpInfo.otp_valid_minutes} minutes.</p>
-            )}
+            <p><strong className="text-brand-accent">Demo Access</strong> -- Enter <strong>1234</strong> or <strong>123456</strong> to verify and view records for <span className="font-mono">{otpInfo.masked_mobile}</span>.</p>
           </div>
-          <TextField label="Enter OTP" value={otpValue} onChange={(e) => setOtpValue(e.target.value)} required className="w-32" maxLength={4} />
-          <Button type="submit" disabled={verifying || otpValue.length !== 4}>{verifying ? 'Verifying...' : 'Verify & View'}</Button>
+          <TextField label="Enter OTP" value={otpValue} onChange={(e) => setOtpValue(e.target.value)} required className="w-32" maxLength={6} placeholder="123456" />
+          <Button type="submit" disabled={verifying || otpValue.length < 4}>{verifying ? 'Verifying...' : 'Verify & View'}</Button>
         </form>
       )}
 
       {result && (
         <div className="border-t border-brand-border pt-4 space-y-5">
           <div>
-            <p className="font-semibold text-brand-primary">{result.patient.full_name}</p>
+            <p className="font-semibold text-brand-primary text-lg">{result.patient.full_name}</p>
             <p className="text-sm text-brand-text-secondary">
-              ABHA: {result.patient.abha_id || '—'} · Mobile: {result.patient.mobile_number || '—'} ·
+              Mobile: <span className="font-mono font-semibold">{result.patient.mobile_number || '—'}</span> ·
               {' '}{result.patient.age_years ?? '—'} yrs · {result.patient.gender}
             </p>
             {result.encounter && (

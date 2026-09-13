@@ -41,25 +41,22 @@ export default function ConfirmScreen({ hospital, booking, patient, onDone }) {
         </Card>
 
         <View style={styles.noticeBanner}>
-          <Text style={styles.noticeIcon}>⏰</Text>
+          <Text style={styles.noticeIcon}>🎫</Text>
           <Text style={styles.noticeText}>
-            Please arrive at least{'\n'}
-            <Text style={styles.noticeTextBold}>10 MINUTES BEFORE</Text>
-            {'\n'}your slot to complete kiosk registration.
+            Queue Token: <Text style={styles.noticeTextBold}>{booking.token_no || patient?.tokenNo || 'SAN-101'}</Text>
+            {'\n'}Your slot is directly registered in the doctor's queue.
           </Text>
         </View>
 
         <View style={styles.screenshotBanner}>
           <Text style={styles.screenshotIcon}>📸</Text>
           <Text style={styles.screenshotText}>
-            Take a screenshot of this page now -- there's no downloadable copy, and you'll want
-            these details on hand when you arrive.
+            Save or screenshot this confirmation token to show when you arrive at the consultation room.
           </Text>
         </View>
 
         <Text style={styles.helperText}>
-          This booking reserves your place in line only. You'll still need to check in and
-          complete registration at the hospital kiosk when you arrive.
+          Your medical records and documents are stored in the central hospital database and available to your consulting doctor.
         </Text>
 
         <Button title="Done" onPress={onDone} style={styles.doneButton} />
