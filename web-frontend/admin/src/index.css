@@ -1,33 +1,48 @@
 @import "tailwindcss";
 
 /*
- * Same blue/white palette as frontend/src/theme/colors.js, so the kiosk and
- * this desktop app read as one product. Tailwind v4 auto-generates utility
- * classes (bg-brand-accent, text-brand-primary, border-brand-border, ...)
- * from these custom properties -- see that file's comments for the measured
- * WCAG contrast numbers behind the accent shades.
+ * MediKiosk Design Tokens & Theme Configuration
+ *
+ * Primary / Buttons: Sage Green #5F8D72
+ * Primary Dark / Headings: Deep Forest #315A43
+ * App Background: Warm Off-White #F7F8F4
+ * Cards / Surfaces: White #FFFFFF
+ * Soft Green Background: Pale Sage #DCE9DF
+ * Main Text: Charcoal Green #26332B
+ * Secondary Text: Muted Gray-Green #6B756E
+ * Borders: Soft Gray #E3E7E3
+ * Success: Green #4F8A63
+ * Warning: Amber #D69A3A
+ * Critical / Error: Soft Red #C95C5C
  */
 @theme {
-  --color-brand-primary: #1e3a5f;        /* navy headings -- not the bright accent blue */
-  --color-brand-accent: #3b82f6;         /* main interactive blue (contrast 3.68:1 on white) */
-  --color-brand-accent-dark: #2563eb;    /* one shade darker -- icon badges, sidebars (5.17:1) */
-  --color-brand-accent-darker: #1d4ed8;  /* pressed state / small text needing more contrast */
-  --color-brand-accent-light: #dbeafe;   /* pastel badge fill */
-  --color-brand-accent-soft: #eff6ff;    /* very soft selected-row fill */
-  --color-brand-bg: #f5f8fe;             /* page background -- faint cool-blue tint, not pure white */
-  --color-brand-border: #e2e8f0;
-  --color-brand-text: #1e293b;
-  --color-brand-text-secondary: #64748b;
-  --color-brand-text-muted: #9ca3af;
-  --color-brand-danger: #dc2626;
-  --color-brand-danger-light: #fee2e2;
-  --color-brand-success: #16a34a;
-  --color-brand-success-light: #dcfce7;
-  --color-brand-warning: #d97706;
-  --color-brand-warning-light: #fef3c7;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --color-brand-primary: #315A43;        /* Deep Forest (headings/emphasis) */
+  --color-brand-accent: #5F8D72;         /* Sage Green (primary actions / buttons / active) */
+  --color-brand-accent-dark: #315A43;    /* Deep Forest */
+  --color-brand-accent-darker: #26332B;  /* Charcoal Green */
+  --color-brand-accent-light: #DCE9DF;   /* Pale Sage */
+  --color-brand-accent-soft: #DCE9DF;    /* Pale Sage soft background */
+  --color-brand-bg: #F7F8F4;             /* Warm Off-White page background */
+  --color-brand-surface: #FFFFFF;        /* White cards / surfaces */
+  --color-brand-border: #E3E7E3;         /* Soft Gray border */
+  --color-brand-text: #26332B;           /* Charcoal Green main text */
+  --color-brand-text-secondary: #6B756E; /* Muted Gray-Green secondary text */
+  --color-brand-text-muted: #6B756E;
+  --color-brand-danger: #C95C5C;         /* Soft Red critical/error */
+  --color-brand-danger-light: #FCE8E8;
+  --color-brand-success: #4F8A63;        /* Green success */
+  --color-brand-success-light: #DCE9DF;
+  --color-brand-warning: #D69A3A;        /* Amber warning */
+  --color-brand-warning-light: #FDF5E6;
 }
 
 body {
+  font-family: var(--font-sans);
   background-color: var(--color-brand-bg);
   color: var(--color-brand-text);
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
 }
+

@@ -35,38 +35,38 @@ export default function TriageIllustration({ className = 'w-full max-w-md h-auto
         {/* Triage Uniform */}
         <path
           d="M55 200 L68 95 C75 88, 145 88, 152 95 L165 200 Z"
-          fill="#1E3A8A"
+          fill="#315A43"
         />
         {/* Collar & ID Badge */}
         <path d="M98 90 L110 120 L122 90 Z" fill="#FFFFFF" />
         <rect x="85" y="130" width="22" height="28" rx="4" fill="#FFFFFF" />
-        <rect x="89" y="134" width="14" height="6" rx="2" fill="#EF4444" />
-        <rect x="89" y="144" width="14" height="3" rx="1" fill="#94A3B8" />
-        <rect x="89" y="149" width="10" height="3" rx="1" fill="#94A3B8" />
+        <rect x="89" y="134" width="14" height="6" rx="2" fill="#C95C5C" />
+        <rect x="89" y="144" width="14" height="3" rx="1" fill="#6B756E" />
+        <rect x="89" y="149" width="10" height="3" rx="1" fill="#6B756E" />
       </g>
 
       {/* Triage Priority Queue Board */}
       <g transform="translate(290, 170)">
-        <rect x="0" y="0" width="120" height="135" rx="12" fill="#FFFFFF" filter="drop-shadow(0px 8px 20px rgba(0,0,0,0.15))" />
-        <rect x="14" y="16" width="92" height="12" rx="4" fill="#1E293B" />
+        <rect x="0" y="0" width="120" height="135" rx="12" fill="#FFFFFF" filter="drop-shadow(0px 8px 20px rgba(0,0,0,0.06))" />
+        <rect x="14" y="16" width="92" height="12" rx="4" fill="#26332B" />
         
-        {/* Priority 1: Red Emergency */}
-        <rect x="14" y="40" width="16" height="16" rx="4" fill="#EF4444" />
-        <rect x="36" y="43" width="70" height="10" rx="3" fill="#FEE2E2" />
+        {/* Priority 1: Critical Emergency */}
+        <rect x="14" y="40" width="16" height="16" rx="4" fill="#C95C5C" />
+        <rect x="36" y="43" width="70" height="10" rx="3" fill="#FCE8E8" />
 
-        {/* Priority 2: Yellow Urgent */}
-        <rect x="14" y="66" width="16" height="16" rx="4" fill="#F59E0B" />
-        <rect x="36" y="69" width="60" height="10" rx="3" fill="#FEF3C7" />
+        {/* Priority 2: Warning Urgent */}
+        <rect x="14" y="66" width="16" height="16" rx="4" fill="#D69A3A" />
+        <rect x="36" y="69" width="60" height="10" rx="3" fill="#FDF5E6" />
 
-        {/* Priority 3: Green Routine */}
-        <rect x="14" y="92" width="16" height="16" rx="4" fill="#10B981" />
-        <rect x="36" y="95" width="50" height="10" rx="3" fill="#D1FAE5" />
+        {/* Priority 3: Success Routine */}
+        <rect x="14" y="92" width="16" height="16" rx="4" fill="#4F8A63" />
+        <rect x="36" y="95" width="50" height="10" rx="3" fill="#DCE9DF" />
       </g>
 
       {/* Dynamic vital ECG line */}
       <path
         d="M50 320 L120 320 L135 290 L150 350 L165 305 L180 325 L190 320 L450 320"
-        stroke="#EF4444"
+        stroke="#C95C5C"
         strokeWidth="4"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -75,3 +75,4 @@ export default function TriageIllustration({ className = 'w-full max-w-md h-auto
     </svg>
   );
 }
+

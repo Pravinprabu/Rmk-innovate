@@ -32,7 +32,7 @@ export default function HospitalAdminLogin() {
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-brand-bg">
       {/* LEFT SIDE PANEL -- WITH BOLD TITLE AND ANIMATED HOSPITAL ADMIN SVG */}
-      <div className="hidden lg:flex p-12 xl:p-16 flex-col justify-between relative overflow-hidden bg-gradient-to-br from-[#1E3A8A] via-[#1E3A5F] to-[#0F172A]">
+      <div className="hidden lg:flex p-12 xl:p-16 flex-col justify-between relative overflow-hidden bg-gradient-to-br from-[#315A43] via-[#26332B] to-[#1C2620]">
         {/* Subtle decorative glow circles */}
         <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-white/5 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-white/5 blur-3xl pointer-events-none" />
@@ -69,14 +69,14 @@ export default function HospitalAdminLogin() {
 
       {/* RIGHT SIDE LOGIN CARD CONTAINER -- PROMINENT, LARGE & SPACIOUS */}
       <div className="flex items-center justify-center p-6 sm:p-10 lg:p-14 xl:p-18">
-        <div className="w-full max-w-xl xl:max-w-2xl bg-white rounded-3xl border border-slate-200 shadow-2xl shadow-slate-300/60 p-8 sm:p-12 lg:p-14">
+        <div className="w-full max-w-xl xl:max-w-2xl bg-white rounded-3xl border border-brand-border shadow-lg shadow-slate-200/50 p-8 sm:p-12 lg:p-14">
           {/* CARD TITLE & SUBTITLE */}
           <div className="mb-8">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-brand-accent text-xs sm:text-sm font-bold uppercase tracking-wider mb-4">
-              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-accent-light/60 border border-brand-border text-brand-accent text-xs sm:text-sm font-medium uppercase tracking-wider mb-4">
+              <span className="w-2 h-2 rounded-full bg-brand-accent animate-pulse"></span>
               Facility Administration
             </div>
-            <h2 className="text-3xl sm:text-4xl font-black text-brand-primary tracking-tight mb-2">
+            <h2 className="text-3xl sm:text-4xl font-semibold text-brand-primary tracking-tight mb-2">
               Hospital Admin Login
             </h2>
             <p className="text-base sm:text-lg text-brand-text-secondary">
@@ -93,7 +93,7 @@ export default function HospitalAdminLogin() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 autoFocus
-                className="py-3.5 px-4 text-base sm:text-lg rounded-xl border-slate-300"
+                className="py-3.5 px-4 text-base sm:text-lg rounded-xl border-brand-border"
                 placeholder="e.g. hosp-admin-01"
               />
             </div>
@@ -105,7 +105,7 @@ export default function HospitalAdminLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="py-3.5 px-4 text-base sm:text-lg rounded-xl border-slate-300"
+                className="py-3.5 px-4 text-base sm:text-lg rounded-xl border-brand-border"
                 placeholder="••••••••••••"
               />
             </div>
@@ -115,7 +115,7 @@ export default function HospitalAdminLogin() {
             <div className="pt-3">
               <Button
                 type="submit"
-                className="w-full py-4 text-base sm:text-lg font-bold rounded-xl bg-brand-accent hover:bg-brand-accent-dark text-white shadow-xl shadow-blue-500/30 transition-all hover:scale-[1.01]"
+                className="w-full py-4 text-base sm:text-lg font-medium rounded-xl bg-brand-accent hover:bg-brand-accent-dark text-white shadow-md shadow-emerald-900/10 transition-all hover:scale-[1.01]"
                 disabled={loading}
               >
                 {loading ? 'Signing in...' : 'Sign in as Hospital Admin'}

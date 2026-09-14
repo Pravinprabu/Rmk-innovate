@@ -498,7 +498,13 @@ Provisional assessment points to symptomatic management with routine baseline vi
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      {/* Top Right Leaf Watermark */}
+      <View style={styles.topRightLeafContainer} pointerEvents="none">
+        <View style={styles.leafMain} />
+        <View style={styles.leafSecondary} />
+      </View>
+
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Top Header */}
         <View style={styles.navBar}>
           <TouchableOpacity onPress={onDone} style={styles.cancelBtn}>
@@ -511,31 +517,43 @@ Provisional assessment points to symptomatic management with routine baseline vi
           </View>
         </View>
 
-        {/* Progress bar */}
-        <View style={styles.progressBarBg}>
-          <View style={[styles.progressBarFill, { width: `${progressPercent}%` }]} />
+        {/* Progress Bar & Percentage */}
+        <View style={styles.progressRow}>
+          <View style={styles.progressBarBg}>
+            <View style={[styles.progressBarFill, { width: `${progressPercent}%` }]} />
+          </View>
+          <Text style={styles.adaptivePercent}>{progressPercent}% Done</Text>
         </View>
 
-        {/* Demo Auto-Fill Option */}
-        <TouchableOpacity onPress={handleQuickFillDemo} style={styles.demoFillBanner} activeOpacity={0.8}>
-          <Text style={styles.demoFillText}>⚡ Fast Demo: Auto-Fill All 15 Questions</Text>
-        </TouchableOpacity>
+        {/* Save time with AI Banner */}
+        <View style={styles.demoFillBanner}>
+          <View style={styles.demoFillLeft}>
+            <View style={styles.sparkleCircle}>
+              <Text style={styles.sparkleIcon}>✨</Text>
+            </View>
+            <View style={styles.demoFillTextGroup}>
+              <Text style={styles.demoFillTitle}>Save time with AI</Text>
+              <Text style={styles.demoFillSubtitle}>Quickly fill all 15 questions with our smart assistant.</Text>
+            </View>
+          </View>
+
+          <TouchableOpacity onPress={handleQuickFillDemo} style={styles.autoFillBtn} activeOpacity={0.85}>
+            <Text style={styles.autoFillBtnText}>⚡ Auto-Fill</Text>
+          </TouchableOpacity>
+        </View>
 
         <ErrorBanner message={error} />
 
-        {/* Question Container */}
+        {/* Question Section */}
         <View style={styles.questionSection}>
-          <View style={styles.categoryRow}>
-            <Text style={styles.categoryBadge}>🩺 {question.category}</Text>
-            <Text style={styles.adaptivePercent}>{progressPercent}% Done</Text>
-          </View>
+          <Text style={styles.categoryBadge}>{question.category}</Text>
 
           <Heading style={styles.questionText}>{question.question}</Heading>
           <Text style={styles.questionInstruction}>
-            Select the option that best describes your current condition:
+            Select the option that best describes your current condition.
           </Text>
 
-          {/* Options */}
+          {/* Options List */}
           <View style={styles.optionsList}>
             {question.options.map((opt, idx) => {
               const isSelected = selectedAnswer === opt;
@@ -569,15 +587,17 @@ Provisional assessment points to symptomatic management with routine baseline vi
           {/* Optional patient custom notes */}
           <View style={styles.customNotesSection}>
             <Text style={styles.customNotesLabel}>
-              Additional details for Dr. Raj (Optional):
+              Additional details for Dr. Raj (Optional)
             </Text>
             <TextInput
               style={styles.customNotesInput}
-              placeholder="e.g. Started after drinking cold water, feels worse in morning..."
-              placeholderTextColor={colors.textMuted}
+              placeholder="e.g. Started after drinking cold water, feels worse in the night..."
+              placeholderTextColor="#9CA3AF"
               value={currentNote}
               onChangeText={(txt) => setCustomNotes((prev) => ({ ...prev, [question.id]: txt }))}
+              maxLength={200}
             />
+            <Text style={styles.charCounter}>{(currentNote || '').length}/200</Text>
           </View>
         </View>
 
@@ -588,11 +608,12 @@ Provisional assessment points to symptomatic management with routine baseline vi
               onPress={handlePrev}
               disabled={currentStep === 0}
               style={[styles.navBtnSecondary, currentStep === 0 && styles.navBtnDisabled]}
+              activeOpacity={0.8}
             >
               <Text style={styles.navBtnSecondaryText}>← Previous</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={handleSkip} style={styles.skipBtn}>
+            <TouchableOpacity onPress={handleSkip} style={styles.skipBtn} activeOpacity={0.7}>
               <Text style={styles.skipText}>Skip</Text>
             </TouchableOpacity>
 
@@ -600,9 +621,10 @@ Provisional assessment points to symptomatic management with routine baseline vi
               onPress={handleNext}
               disabled={!selectedAnswer}
               style={[styles.navBtnPrimary, !selectedAnswer && styles.navBtnDisabled]}
+              activeOpacity={0.88}
             >
               <Text style={styles.navBtnPrimaryText}>
-                {currentStep === CLINICAL_QUESTIONS.length - 1 ? '🩺 Generate AI Summary' : 'Next →'}
+                {currentStep === CLINICAL_QUESTIONS.length - 1 ? 'Generate AI Summary  →' : 'Next  →'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -630,11 +652,17 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
   },
   stepBadgeText: { color: colors.emeraldDark, fontWeight: '800', fontSize: 13 },
+  progressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: spacing.md,
+  },
   progressBarBg: {
+    flex: 1,
     height: 6,
-    backgroundColor: colors.borderLight,
+    backgroundColor: '#E3E7E3',
     borderRadius: 3,
-    marginBottom: spacing.lg,
     overflow: 'hidden',
   },
   progressBarFill: {
@@ -643,123 +671,176 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   demoFillBanner: {
-    backgroundColor: colors.emeraldLight,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: radius.pill,
+    backgroundColor: '#EBF3EE',
+    padding: 12,
+    borderRadius: 14,
     marginBottom: spacing.md,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.emerald,
-  },
-  demoFillText: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: colors.emeraldDark,
-  },
-  questionSection: { marginBottom: spacing.xl },
-  categoryRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.xs,
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#D4E3D8',
   },
-  categoryBadge: {
-    fontSize: 12,
-    fontWeight: '800',
+  demoFillLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    flex: 1,
+  },
+  sparkleCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#E1ECE3',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sparkleIcon: {
+    fontSize: 16,
+  },
+  demoFillTextGroup: {
+    flex: 1,
+  },
+  demoFillTitle: {
+    fontSize: 13.5,
+    fontWeight: '700',
     color: colors.primary,
+  },
+  demoFillSubtitle: {
+    fontSize: 11.5,
+    color: colors.textSecondary,
+    marginTop: 1,
+  },
+  autoFillBtn: {
+    backgroundColor: colors.emerald,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 10,
+  },
+  autoFillBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.surfaceWhite,
+  },
+  questionSection: { marginBottom: spacing.lg },
+  categoryBadge: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: colors.textSecondary,
     textTransform: 'uppercase',
-    letterSpacing: 0.8,
+    letterSpacing: 1.2,
+    marginBottom: 6,
   },
   adaptivePercent: {
     fontSize: 12,
     fontWeight: '700',
     color: colors.textSecondary,
   },
-  questionText: { fontSize: 20, lineHeight: 28, marginVertical: spacing.xs },
-  questionInstruction: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    marginBottom: spacing.md,
+  questionText: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: colors.primary,
+    lineHeight: 32,
+    letterSpacing: -0.3,
+    marginBottom: 6,
   },
-  optionsList: { gap: spacing.sm, marginBottom: spacing.md },
+  questionInstruction: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginBottom: 16,
+  },
+  optionsList: { gap: 10, marginBottom: 16 },
   optionCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.surfaceWhite,
-    padding: spacing.md,
-    borderRadius: radius.card,
-    borderWidth: 1.5,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 14,
+    borderWidth: 1,
     borderColor: colors.borderLight,
   },
   optionCardSelected: {
     borderColor: colors.emerald,
-    backgroundColor: colors.emeraldLight || '#ECFDF5',
+    backgroundColor: '#F2F7F4',
+    borderWidth: 1.5,
   },
   radioCircle: {
     width: 22,
     height: 22,
     borderRadius: 11,
-    borderWidth: 2,
-    borderColor: colors.borderLight,
-    marginRight: spacing.md,
+    borderWidth: 1.5,
+    borderColor: '#A2ACA5',
+    marginRight: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioCircleSelected: {
     borderColor: colors.emerald,
-  },
-  radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
     backgroundColor: colors.emerald,
   },
+  radioInner: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.surfaceWhite,
+  },
   optionText: {
-    fontSize: 15,
+    fontSize: 15.5,
     color: colors.textPrimary,
     fontWeight: '600',
     flex: 1,
-    lineHeight: 21,
   },
   optionTextSelected: {
-    color: colors.emeraldDark,
-    fontWeight: '800',
+    color: colors.primary,
+    fontWeight: '700',
   },
   adaptiveBanner: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: '#F2F7F4',
     borderLeftWidth: 4,
-    borderLeftColor: colors.primary,
+    borderLeftColor: colors.emerald,
     padding: spacing.md,
-    borderRadius: radius.card,
-    marginBottom: spacing.md,
+    borderRadius: 12,
+    marginBottom: 16,
   },
   adaptiveBannerText: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '600',
     color: colors.primary,
     lineHeight: 18,
   },
   customNotesSection: {
-    backgroundColor: colors.surfaceWhite,
-    padding: spacing.md,
-    borderRadius: radius.card,
+    backgroundColor: '#F8FAF8',
+    padding: 14,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: colors.borderLight,
   },
   customNotesLabel: {
-    fontSize: 12,
+    fontSize: 13.5,
     fontWeight: '700',
-    color: colors.textSecondary,
-    marginBottom: spacing.xs,
+    color: colors.primary,
+    marginBottom: 8,
   },
   customNotesInput: {
+    backgroundColor: colors.surfaceWhite,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     fontSize: 14,
     color: colors.textPrimary,
-    minHeight: 38,
+    minHeight: 54,
+  },
+  charCounter: {
+    fontSize: 11,
+    color: '#8A968F',
+    textAlign: 'right',
+    marginTop: 4,
   },
   bottomNav: {
-    paddingTop: spacing.md,
+    paddingTop: 14,
     borderTopWidth: 1,
     borderTopColor: colors.borderLight,
   },
@@ -767,42 +848,42 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: spacing.sm,
+    gap: 10,
   },
   navBtnSecondary: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderRadius: radius.pill,
-    borderWidth: 1.5,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 22,
+    borderWidth: 1,
     borderColor: colors.borderLight,
     backgroundColor: colors.surfaceWhite,
   },
   navBtnSecondaryText: {
     fontSize: 14,
     fontWeight: '700',
-    color: colors.textSecondary,
+    color: colors.primary,
   },
   skipBtn: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
   },
   skipText: {
     fontSize: 14,
     fontWeight: '700',
-    color: colors.textMuted,
+    color: colors.primary,
   },
   navBtnPrimary: {
     flex: 1,
     backgroundColor: colors.emerald,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderRadius: radius.pill,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
   },
   navBtnPrimaryText: {
     fontSize: 15,
-    fontWeight: '800',
+    fontWeight: '700',
     color: colors.surfaceWhite,
   },
   navBtnDisabled: {

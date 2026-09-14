@@ -75,7 +75,7 @@ export default function StaffLogin() {
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-brand-bg">
       {/* LEFT SIDE PANEL -- WITH BOLD ROLE TITLE AND SVG ILLUSTRATION */}
-      <div className="hidden lg:flex p-12 xl:p-16 flex-col justify-between relative overflow-hidden bg-gradient-to-br from-[#1E3A8A] via-[#1E3A5F] to-[#0F172A]">
+      <div className="hidden lg:flex p-12 xl:p-16 flex-col justify-between relative overflow-hidden bg-gradient-to-br from-[#315A43] via-[#26332B] to-[#1C2620]">
         {/* Subtle decorative glow circles */}
         <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-white/5 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-white/5 blur-3xl pointer-events-none" />
@@ -112,10 +112,10 @@ export default function StaffLogin() {
 
       {/* RIGHT SIDE LOGIN CARD CONTAINER -- PROMINENT, LARGE & SPACIOUS */}
       <div className="flex items-center justify-center p-6 sm:p-10 lg:p-14 xl:p-18">
-        <div className="w-full max-w-xl xl:max-w-2xl bg-white rounded-3xl border border-slate-200 shadow-2xl shadow-slate-300/60 p-8 sm:p-12 lg:p-14">
+        <div className="w-full max-w-xl xl:max-w-2xl bg-white rounded-3xl border border-brand-border shadow-lg shadow-slate-200/50 p-8 sm:p-12 lg:p-14">
           {/* DYNAMIC CARD TITLE & SUBTITLE */}
           <div className="mb-8">
-            <h2 className="text-3xl sm:text-4xl font-black text-brand-primary tracking-tight mb-2">
+            <h2 className="text-3xl sm:text-4xl font-semibold text-brand-primary tracking-tight mb-2">
               {isDoctor ? 'Doctor Login' : 'Triage Login'}
             </h2>
             <p className="text-base sm:text-lg text-brand-text-secondary">
@@ -125,15 +125,15 @@ export default function StaffLogin() {
             </p>
           </div>
 
-          {/* LARGE ROLE TOGGLE BUTTONS -- SAME CONSISTENT BLUE BRAND COLOR */}
-          <div className="grid grid-cols-2 p-2 rounded-2xl bg-slate-100 border border-slate-200 mb-8">
+          {/* LARGE ROLE TOGGLE BUTTONS -- SAGE GREEN BRAND COLOR */}
+          <div className="grid grid-cols-2 p-2 rounded-2xl bg-slate-100 border border-brand-border mb-8">
             <button
               key="doctor"
               type="button"
               onClick={() => setRole('doctor')}
-              className={`py-3.5 px-6 rounded-xl text-base sm:text-lg font-bold transition-all flex items-center justify-center gap-3 ${
+              className={`py-3.5 px-6 rounded-xl text-base sm:text-lg font-medium transition-all flex items-center justify-center gap-3 ${
                 isDoctor
-                  ? 'bg-brand-accent text-white shadow-lg shadow-blue-500/30'
+                  ? 'bg-brand-accent text-white shadow-md shadow-emerald-900/10'
                   : 'text-brand-text-secondary hover:text-brand-primary hover:bg-slate-200/70'
               }`}
             >
@@ -145,9 +145,9 @@ export default function StaffLogin() {
               key="triage"
               type="button"
               onClick={() => setRole('triage')}
-              className={`py-3.5 px-6 rounded-xl text-base sm:text-lg font-bold transition-all flex items-center justify-center gap-3 ${
+              className={`py-3.5 px-6 rounded-xl text-base sm:text-lg font-medium transition-all flex items-center justify-center gap-3 ${
                 !isDoctor
-                  ? 'bg-brand-accent text-white shadow-lg shadow-blue-500/30'
+                  ? 'bg-brand-accent text-white shadow-md shadow-emerald-900/10'
                   : 'text-brand-text-secondary hover:text-brand-primary hover:bg-slate-200/70'
               }`}
             >
@@ -161,7 +161,7 @@ export default function StaffLogin() {
               <button
                 type="button"
                 onClick={handleFillDemoDoctor}
-                className="text-xs sm:text-sm font-semibold text-brand-accent hover:text-brand-accent-darker bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
+                className="text-xs sm:text-sm font-medium text-brand-accent hover:text-brand-accent-dark bg-brand-accent-light/50 hover:bg-brand-accent-light border border-brand-border px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
               >
                 <span>⚡</span>
                 <span>Fill Doctor Demo (Sanjeevi / san-doc-001)</span>
@@ -170,7 +170,7 @@ export default function StaffLogin() {
               <button
                 type="button"
                 onClick={handleFillDemoTriage}
-                className="text-xs sm:text-sm font-semibold text-brand-accent hover:text-brand-accent-darker bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
+                className="text-xs sm:text-sm font-medium text-brand-accent hover:text-brand-accent-dark bg-brand-accent-light/50 hover:bg-brand-accent-light border border-brand-border px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
               >
                 <span>⚡</span>
                 <span>Fill Triage Demo (Sanjeevi / kum-tri-001)</span>
@@ -186,7 +186,7 @@ export default function StaffLogin() {
                 value={hospitalId}
                 onChange={(e) => setHospitalId(e.target.value)}
                 required
-                className="py-3.5 px-4 text-base sm:text-lg rounded-xl border-slate-300"
+                className="py-3.5 px-4 text-base sm:text-lg rounded-xl border-brand-border"
               >
                 {hospitals.map((h) => (
                   <option key={h.id} value={h.id}>
@@ -203,7 +203,7 @@ export default function StaffLogin() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 autoFocus
-                className="py-3.5 px-4 text-base sm:text-lg rounded-xl border-slate-300"
+                className="py-3.5 px-4 text-base sm:text-lg rounded-xl border-brand-border"
                 placeholder={isDoctor ? 'e.g. DOC-001 or superadmin' : 'e.g. TR-001'}
               />
             </div>
@@ -215,7 +215,7 @@ export default function StaffLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="py-3.5 px-4 text-base sm:text-lg rounded-xl border-slate-300"
+                className="py-3.5 px-4 text-base sm:text-lg rounded-xl border-brand-border"
                 placeholder="••••••••••••"
               />
             </div>
@@ -225,7 +225,7 @@ export default function StaffLogin() {
             <div className="pt-3">
               <Button
                 type="submit"
-                className="w-full py-4 text-base sm:text-lg font-bold rounded-xl bg-brand-accent hover:bg-brand-accent-dark text-white shadow-xl shadow-blue-500/30 transition-all hover:scale-[1.01]"
+                className="w-full py-4 text-base sm:text-lg font-medium rounded-xl bg-brand-accent hover:bg-brand-accent-dark text-white shadow-md shadow-emerald-900/10 transition-all hover:scale-[1.01]"
                 disabled={loading || !hospitalId}
               >
                 {loading

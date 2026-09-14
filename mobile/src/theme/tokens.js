@@ -16,19 +16,20 @@ export const spacing = {
   massive: 96,
 };
 
-// Consistent everywhere -- no mixing radii across components.
+// Consistent everywhere -- rounded cards 12-16px (14px), buttons 10-12px (10px).
 export const radius = {
-  card: 20,
+  card: 14,
+  button: 10,
   pill: 9999,
 };
 
-// One soft shadow for every elevated surface -- don't hand-tune per component.
+// Very subtle shadows
 export const shadow = {
-  shadowColor: colors.purple900,
-  shadowOffset: { width: 0, height: 6 },
-  shadowOpacity: 0.08,
-  shadowRadius: 16,
-  elevation: 4,
+  shadowColor: colors.primaryDark,
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.04,
+  shadowRadius: 8,
+  elevation: 2,
 };
 
 // Minimum touch target sizes -- docs/UI_MASTER_PROMPT.md section 2.
