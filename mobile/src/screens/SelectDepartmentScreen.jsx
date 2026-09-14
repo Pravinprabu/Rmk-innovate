@@ -18,12 +18,16 @@ export default function SelectDepartmentScreen({ hospital, onSelectDepartment, o
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const result = await callApi(() => mobileApi.departments(hospital.id));
+      const result = await callApi(() => mobileApi.departments(hospital?.id));
       setLoading(false);
-      if (result.ok) setDepartments(result.data);
-      else setError(result.error);
+      if (result.ok) {
+        setDepartments(Array.isArray(result.data) ? result.data : (result.data?.departments || []));
+      } else {
+        setError(result.error);
+        setDepartments([]);
+      }
     })();
-  }, [hospital.id]);
+  }, [hospital?.id]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -31,18 +35,18 @@ export default function SelectDepartmentScreen({ hospital, onSelectDepartment, o
         <TouchableOpacity onPress={onBack}>
           <Text style={styles.backLink}>← Change hospital</Text>
         </TouchableOpacity>
-        <Heading style={styles.title}>{hospital.name}</Heading>
+        <Heading style={styles.title}>{hospital?.name || 'Hospital'}</Heading>
         <Text style={styles.subtitle}>Which department would you like to visit?</Text>
       </View>
 
       <ErrorBanner message={error} />
       {loading ? (
         <LoadingBlock label="Loading departments..." />
-      ) : departments.length === 0 ? (
+      ) : (departments || []).length === 0 ? (
         <Text style={styles.emptyText}>No departments are configured for this hospital yet.</Text>
       ) : (
         <View style={styles.list}>
-          {departments.map((dept) => (
+          {Array.isArray(departments) && departments.map((dept) => (
             <TouchableOpacity key={dept.id} onPress={() => onSelectDepartment(dept)} activeOpacity={0.85}>
               <Card style={styles.deptCard}>
                 <Text style={styles.deptName}>{dept.name}</Text>

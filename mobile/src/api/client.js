@@ -38,7 +38,12 @@ async function request(path, { method = 'GET', body } = {}) {
   }
 
   const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
+  let data = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch (_) {
+    data = null;
+  }
 
   if (!response.ok) {
     const message = (data && (data.detail || JSON.stringify(data))) || `Request failed (${response.status})`;
@@ -60,7 +65,12 @@ async function requestMultipart(path, formData) {
   }
 
   const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
+  let data = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch (_) {
+    data = null;
+  }
 
   if (!response.ok) {
     const message = (data && (data.detail || JSON.stringify(data))) || `Request failed (${response.status})`;

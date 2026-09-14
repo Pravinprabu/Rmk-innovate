@@ -39,12 +39,17 @@ export default function PickSlotScreen({ hospital, department, onBack, onSlotSel
     (async () => {
       setLoading(true);
       setError(null);
-      const result = await callApi(() => mobileApi.slots(hospital.id, department.id, date));
+      const result = await callApi(() => mobileApi.slots(hospital?.id, department?.id, date));
       setLoading(false);
-      if (result.ok) setSlots(result.data.slots);
-      else setError(result.error);
+      if (result.ok) {
+        const list = Array.isArray(result.data) ? result.data : (result.data?.slots || []);
+        setSlots(list);
+      } else {
+        setError(result.error);
+        setSlots([]);
+      }
     })();
-  }, [date]);
+  }, [date, hospital?.id, department?.id]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -52,7 +57,7 @@ export default function PickSlotScreen({ hospital, department, onBack, onSlotSel
         <TouchableOpacity onPress={onBack}>
           <Text style={styles.backLink}>← Change department</Text>
         </TouchableOpacity>
-        <Heading style={styles.title}>{hospital.name} · {department.name}</Heading>
+        <Heading style={styles.title}>{hospital?.name || 'Hospital'} · {department?.name || 'Department'}</Heading>
         <Text style={styles.subtitle}>Pick a 30-minute arrival slot</Text>
       </View>
 
@@ -75,7 +80,7 @@ export default function PickSlotScreen({ hospital, department, onBack, onSlotSel
         <LoadingBlock label="Loading slots..." />
       ) : (
         <ScrollView contentContainerStyle={styles.slotGrid}>
-          {slots.map((slot) => (
+          {Array.isArray(slots) && slots.map((slot) => (
             <TouchableOpacity
               key={slot.time}
               disabled={!slot.available || submitting}
